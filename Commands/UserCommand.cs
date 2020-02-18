@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Commands
 {
-    public class UserCommand : Command
+    public class UserCommand : CommandBase
     {
         private string[] arguments;
 
@@ -15,7 +15,7 @@ namespace Commands
                 LogPerfix = "USER-COMMAND",
                 LogFileName = null,
                 MeasureElapsedTime = false,
-                Location = CommandSettings.CommandLocation.Any
+                Location = CommandLocation.Any
             })
         {
         }

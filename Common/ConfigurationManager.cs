@@ -14,13 +14,13 @@ namespace Common
         public ConfigurationManager(string moduleName, IEnumerable<Dep> processedConfigurations)
         {
             ProcessedDeps = processedConfigurations.Select(dep => dep.Configuration).ToList();
-            parser = new ConfigurationParser(new FileInfo(Path.Combine(Helper.CurrentWorkspace, moduleName)));
+            parser = ConfigurationParser.Create(new FileInfo(Path.Combine(Helper.CurrentWorkspace, moduleName)));
         }
 
         public ConfigurationManager(string moduleName, IEnumerable<string> processedConfigurations)
         {
             ProcessedDeps = processedConfigurations.ToList();
-            parser = new ConfigurationParser(new FileInfo(Path.Combine(Helper.CurrentWorkspace, moduleName)));
+            parser = ConfigurationParser.Create(new FileInfo(Path.Combine(Helper.CurrentWorkspace, moduleName)));
         }
 
         public ConfigurationManager(IEnumerable<Dep> processedDeps, IConfigurationParser parser)

@@ -16,7 +16,7 @@ namespace Common
 
         public DepsChecker(string cwd, string config, List<Module> modules)
         {
-            if (!new ConfigurationParser(new FileInfo(cwd)).ConfigurationExists(config))
+            if (!ConfigurationParser.Create(new FileInfo(cwd)).ConfigurationExists(config))
                 throw new NoSuchConfigurationException(cwd, config);
             buildData = new BuildYamlParser(new FileInfo(cwd)).Get(config);
             depsRefsCollector = new DepsReferencesCollector(cwd, config);

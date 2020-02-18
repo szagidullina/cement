@@ -7,8 +7,8 @@ namespace Commands
     {
         private readonly Dictionary<string, ICommand> commands = new Dictionary<string, ICommand>
         {
-            {"add", new RefAdd()},
-            {"fix", new RefFix()}
+            {"add", new RefAddCommand()},
+            {"fix", new RefFixCommand()}
         };
 
         public int Run(string[] args)

@@ -241,10 +241,9 @@ namespace Common
         public static DateTime GetLastUpdateTime()
         {
             var file = GetLastUpdateFilePath();
-            if (!File.Exists(file))
-                return DateTime.MinValue;
-
-            return File.GetLastWriteTime(file);
+            return File.Exists(file) 
+                ? File.GetLastWriteTime(file)
+                : DateTime.MinValue;
         }
 
         public static void SaveLastUpdateTime()
@@ -270,12 +269,12 @@ namespace Common
 
         public static void RemoveOldKey(ref string[] args, string oldKey, ILogger log)
         {
-            if (args.Contains(oldKey))
-            {
-                ConsoleWriter.WriteError("Don't use old " + oldKey + " key.");
-                log.LogWarning("Found old key " + oldKey + " in " + string.Join(" ", args) + " in " + Directory.GetCurrentDirectory());
-                args = args.Where(a => a != oldKey).ToArray();
-            }
+            if (!args.Contains(oldKey))
+                return;
+            
+            ConsoleWriter.WriteError("Don't use old " + oldKey + " key.");
+            log.LogWarning("Found old key " + oldKey + " in " + string.Join(" ", args) + " in " + Directory.GetCurrentDirectory());
+            args = args.Where(a => a != oldKey).ToArray();
         }
 
         public static string FixPath([NotNull] string path)

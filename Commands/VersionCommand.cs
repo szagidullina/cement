@@ -1,0 +1,25 @@
+﻿using System.Linq;
+using Common;
+
+namespace Commands
+{
+    public class VersionCommand : ICommand
+    {
+        public int Run(string[] args)
+        {
+            var lines = Helper.GetAssemblyTitle().Split('\n');
+            var version = string.Join("\n", lines.Skip(1).Take(4));
+            ConsoleWriter.WriteInfo(version);
+            return 0;
+        }
+
+        public string HelpMessage => @"
+    Shows cement's version
+
+    Usage:
+        cm --version
+";
+
+        public bool IsHiddenCommand => false;
+    }
+}

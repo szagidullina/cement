@@ -37,7 +37,7 @@ namespace Commands
 
         private int Execute()
         {
-            if (package.Type != "git")
+            if (package.Type != PackageType.Git)
             {
                 ConsoleWriter.WriteError("You should add/change local modules file manually");
                 {
@@ -152,7 +152,7 @@ namespace Commands
             var filePath = Path.Combine(repo.RepoPath, "modules");
             var lines = File.ReadAllLines(filePath);
 
-            for (int i = 0; i < lines.Length; i++)
+            for (var i = 0; i < lines.Length; i++)
             {
                 if (lines[i] != "[module " + old.Name + "]")
                     continue;
@@ -172,7 +172,7 @@ namespace Commands
                 throw new CementException($"Specify --package={string.Join("|", packages.Select(p => p.Name))}");
 
             var package = packageName == null
-                ? packages.FirstOrDefault(p => p.Type == "git")
+                ? packages.FirstOrDefault(p => p.Type == PackageType.Git)
                 : packages.FirstOrDefault(p => p.Name == packageName);
             if (package == null)
                 throw new CementException("Unable to find " + packageName + " in package list");

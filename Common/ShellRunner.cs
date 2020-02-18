@@ -93,8 +93,8 @@ namespace Common
 
         private int RunThreeTimes(string commandWithArguments, string workingDirectory, TimeSpan timeout, RetryStrategy retryStrategy = RetryStrategy.IfTimeout)
         {
-            int exitCode = RunOnce(commandWithArguments, workingDirectory, timeout);
-            int times = 2;
+            var exitCode = RunOnce(commandWithArguments, workingDirectory, timeout);
+            var times = 2;
 
             while (times-- > 0 && NeedRunAgain(retryStrategy, exitCode))
             {
@@ -144,7 +144,7 @@ namespace Common
                     }
 
                     LastOutput = Output;
-                    int exitCode = process.ExitCode;
+                    var exitCode = process.ExitCode;
                     log.LogInformation($"EXECUTED {startInfo.FileName} {startInfo.Arguments} in {workingDirectory} in {sw.ElapsedMilliseconds}ms with exitCode {exitCode}");
                     return exitCode;
                 }
@@ -176,7 +176,7 @@ namespace Common
             var moc = searcher.Get();
             foreach (var mo in moc)
             {
-                int child = Convert.ToInt32(mo["ProcessID"]);
+                var child = Convert.ToInt32(mo["ProcessID"]);
                 KillProcessAndChildren(child, killed);
             }
 

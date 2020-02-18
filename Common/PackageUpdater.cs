@@ -12,6 +12,7 @@ namespace Common
         public static void UpdatePackages()
         {
             ConsoleWriter.WriteProgress("Updating module urls");
+            
             var packages = Helper.GetPackages();
             foreach (var package in packages)
             {
@@ -37,10 +38,9 @@ namespace Common
         private static void UpdateGitPackage(Package package)
         {
             var runner = new ShellRunner(Log);
-
             var timeout = TimeSpan.FromMinutes(1);
 
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 using (var tempDir = new TempDirectory())
                 {
@@ -60,10 +60,12 @@ namespace Common
                             $"Failed to update package {package.Name}:\n{runner.Output}\nError message:\n{runner.Errors}\n" +
                             $"Ensure that command 'git clone {package.Url}' works in cmd");
                     }
+                    
                     lock (Helper.PackageLockObject)
                     {
                         if (!Directory.Exists(Helper.GetGlobalCementDirectory()))
                             Directory.CreateDirectory(Helper.GetGlobalCementDirectory());
+                        
                         File.Copy(Path.Combine(tempDir.Path, package.Name, "modules"),
                             Helper.GetPackagePath(package.Name), true);
                     }

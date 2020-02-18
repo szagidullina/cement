@@ -6,7 +6,7 @@ using Common.Logging;
 
 namespace Commands
 {
-    public class CompleteCommand : Command
+    public class CompleteCommand : CommandBase
     {
         public CompleteCommand()
             : base(new CommandSettings
@@ -14,7 +14,7 @@ namespace Commands
                 LogPerfix = "COMPLETE",
                 LogFileName = null,
                 MeasureElapsedTime = false,
-                Location = CommandSettings.CommandLocation.Any,
+                Location = CommandLocation.Any,
                 IsHiddenCommand = true,
                 NoElkLog = true
             })
@@ -25,14 +25,11 @@ namespace Commands
 
         protected override int Execute()
         {
-            var buffer = otherArgs.Length == 0
-                ? ""
-                : otherArgs[0];
+            var buffer = otherArgs.Length == 0 ? "" : otherArgs[0];
 
             if (otherArgs.Length > 1)
             {
-                int pos;
-                if (int.TryParse(otherArgs[1], out pos) && buffer.Length > pos)
+                if (int.TryParse(otherArgs[1], out var pos) && buffer.Length > pos)
                     buffer = buffer.Substring(0, pos);
             }
 

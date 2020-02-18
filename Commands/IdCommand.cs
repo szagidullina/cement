@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Common;
 using Common.Logging;
@@ -18,6 +19,7 @@ namespace Commands
                 PrintHashes(Directory.GetDirectories(cwd));
                 return 0;
             }
+
             if (Helper.IsCurrentDirectoryModule(cwd))
             {
                 PrintHashes(new[] {cwd});
@@ -28,26 +30,32 @@ namespace Commands
             return -1;
         }
 
-        private void PrintHashes(string[] modules)
+        private static void PrintHashes(IEnumerable<string> modules)
         {
             foreach (var module in modules)
             {
                 try
                 {
-                    var moduleName = Path.GetFileName(module);
-                    var workspace = Directory.GetParent(module).FullName;
-                    var repo = new GitRepository(moduleName, workspace, Log);
-                    if (repo.IsGitRepo)
-                    {
-                        var hash = repo.CurrentLocalCommitHash();
-                        ConsoleWriter.WriteLine(moduleName + " " + hash);
-                    }
+                    PrintHash(module);
                 }
                 catch (Exception)
                 {
                     // ignored
                 }
             }
+        }
+
+        private static void PrintHash(string module)
+        {
+            var moduleName = Path.GetFileName(module);
+            var workspace = Directory.GetParent(module).FullName;
+            var repo = new GitRepository(moduleName, workspace, Log);
+
+            if (!repo.IsGitRepo)
+                return;
+
+            var hash = repo.CurrentLocalCommitHash();
+            ConsoleWriter.WriteLine(moduleName + " " + hash);
         }
 
         public string HelpMessage => @"

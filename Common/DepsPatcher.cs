@@ -342,7 +342,7 @@ namespace Common
             if (!File.Exists(moduleYaml))
                 return new List<string>();
 
-            var configurations = new ConfigurationParser(new FileInfo(modulePath)).GetConfigurations();
+            var configurations = ConfigurationParser.Create(new FileInfo(modulePath)).GetConfigurations();
             var result = new HashSet<string>();
             foreach (var config in configurations)
             {
@@ -366,7 +366,7 @@ namespace Common
             if (!File.Exists(moduleYaml))
                 return new List<string>();
 
-            var configurations = new ConfigurationParser(new FileInfo(modulePath)).GetConfigurations();
+            var configurations = ConfigurationParser.Create(new FileInfo(modulePath)).GetConfigurations();
             var result = new HashSet<string>();
 
             foreach (var config in configurations)

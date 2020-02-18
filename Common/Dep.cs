@@ -67,7 +67,7 @@ namespace Common
             if (!DepDefaultConfigurationCache.ContainsKey(path))
             {
                 DepDefaultConfigurationCache[path] =
-                    new ConfigurationParser(new FileInfo(Path.Combine(workspace, Name)))
+                    ConfigurationParser.Create(new FileInfo(Path.Combine(workspace, Name)))
                         .GetDefaultConfigurationName();
             }
             Configuration = DepDefaultConfigurationCache[path];

@@ -9,7 +9,7 @@ using Common.Extensions;
 
 namespace Commands
 {
-    public class UsagesGrep : Command
+    public class UsagesGrepCommand : CommandBase
     {
         private string moduleName;
         private string cwd;
@@ -26,13 +26,13 @@ namespace Commands
         private static readonly Regex Whitespaces = new Regex("\\s");
         private string checkingBranch;
 
-        public UsagesGrep()
+        public UsagesGrepCommand()
             : base(new CommandSettings
             {
                 LogPerfix = "USAGES-GREP",
                 LogFileName = "usages-grep",
                 MeasureElapsedTime = true,
-                Location = CommandSettings.CommandLocation.RootModuleDirectory
+                Location = CommandLocation.RootModuleDirectory
             })
         {
             runner = new ShellRunner(Log);
@@ -94,12 +94,12 @@ namespace Commands
             }
         }
 
-        private List<string> GetExistingDirectories(IEnumerable<Dep> toGrep)
+        private static List<string> GetExistingDirectories(IEnumerable<Dep> toGrep)
         {
             return toGrep.Select(d => d.Name).Where(Directory.Exists).ToList();
         }
 
-        private List<string> CloneModules(IEnumerable<Dep> toGrep, List<Module> modules)
+        private static List<string> CloneModules(IEnumerable<Dep> toGrep, List<Module> modules)
         {
             var clonedModules = new List<string>();
             foreach (var depParent in toGrep)
@@ -118,7 +118,7 @@ namespace Commands
             return clonedModules;
         }
 
-        private string AddModuleToOutput(string output, string module)
+        private static string AddModuleToOutput(string output, string module)
         {
             var lines = output.Split(NewLine, StringSplitOptions.RemoveEmptyEntries);
             for (var i = 0; i < lines.Length; ++i)
@@ -162,7 +162,7 @@ namespace Commands
             return s.Replace("\"", "\\\"");
         }
 
-        private void GetWithoutDependencies(Dep dep, List<Module> modules)
+        private static void GetWithoutDependencies(Dep dep, List<Module> modules)
         {
             var getter = new ModuleGetter(
                 modules,

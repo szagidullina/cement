@@ -45,7 +45,7 @@ namespace Common
 
         public void AddBuiltModule(Dep module, Dictionary<string, string> currentCommitHashes)
         {
-            var configs = new ConfigurationParser(new FileInfo(Path.Combine(Helper.CurrentWorkspace, module.Name))).GetConfigurations();
+            var configs = ConfigurationParser.Create(new FileInfo(Path.Combine(Helper.CurrentWorkspace, module.Name))).GetConfigurations();
             var childConfigs = new ConfigurationManager(module.Name, configs).ProcessedChildrenConfigurations(module);
             childConfigs.Add(module.Configuration);
 

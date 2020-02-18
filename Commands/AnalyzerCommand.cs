@@ -8,7 +8,7 @@ namespace Commands
     {
         private readonly Dictionary<string, ICommand> subCommands = new Dictionary<string, ICommand>
         {
-            {"add", new AnalyzerAdd()}
+            {"add", new AnalyzerAddCommand()}
         };
 
         public int Run(string[] args)

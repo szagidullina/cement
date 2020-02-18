@@ -7,9 +7,9 @@ namespace Commands
     {
         private readonly Dictionary<string, ICommand> commands = new Dictionary<string, ICommand>
         {
-            {"show", new UsagesShow()},
-            {"build", new UsagesBuild()},
-            {"grep", new UsagesGrep()}
+            {"show", new UsagesShowCommand()},
+            {"build", new UsagesBuildCommand()},
+            {"grep", new UsagesGrepCommand()}
         };
 
         public int Run(string[] args)

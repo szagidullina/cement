@@ -1,4 +1,3 @@
-using System;
 using Common;
 using Common.YamlParsers;
 using System.IO;
@@ -7,21 +6,23 @@ using Common.Extensions;
 
 namespace Commands
 {
-    public class PackCommand : Command
+    public class PackCommand : CommandBase
     {
         private string project;
         private string configuration;
         private BuildSettings buildSettings;
-        private bool preRelease = false;
+        private bool preRelease;
 
-        public PackCommand() : base(new CommandSettings
-        {
-            LogPerfix = "PACK",
-            LogFileName = null,
-            MeasureElapsedTime = false,
-            RequireModuleYaml = true,
-            Location = CommandSettings.CommandLocation.InsideModuleDirectory
-        })
+        public PackCommand()
+            : base(
+                new CommandSettings
+                {
+                    LogPerfix = "PACK",
+                    LogFileName = null,
+                    MeasureElapsedTime = false,
+                    RequireModuleYaml = true,
+                    Location = CommandLocation.InsideModuleDirectory
+                })
         {
         }
 
@@ -30,25 +31,32 @@ namespace Commands
             var modulePath = Helper.GetModuleDirectory(Directory.GetCurrentDirectory());
             var moduleName = Path.GetFileName(modulePath);
             project = Yaml.GetProjectFileName(project, moduleName);
-            configuration = configuration ?? "full-build";
+            configuration = string.IsNullOrEmpty(configuration) ? "full-build" : configuration;
 
             var buildData = Yaml.BuildParser(moduleName).Get(configuration).FirstOrDefault(t => !t.Target.IsFakeTarget());
 
             var projectPath = Path.GetFullPath(project);
             var csproj = new ProjectFile(projectPath);
             var deps = new DepsParser(modulePath).Get(configuration);
+           
             ConsoleWriter.WriteInfo("patching csproj");
+            
             var patchedDocument = csproj.CreateCsProjWithNugetReferences(deps.Deps, preRelease);
             var backupFileName = Path.Combine(Path.GetDirectoryName(projectPath) ?? "", "backup." + Path.GetFileName(projectPath));
+            
             if (File.Exists(backupFileName))
                 File.Delete(backupFileName);
+            
             File.Move(projectPath, backupFileName);
+            
             try
             {
                 XmlDocumentHelper.Save(patchedDocument, projectPath, "\n");
                 var moduleBuilder = new ModuleBuilder(Log, buildSettings);
                 moduleBuilder.Init();
+                
                 ConsoleWriter.WriteInfo("start pack");
+                
                 if (!moduleBuilder.DotnetPack(modulePath, projectPath, buildData?.Configuration ?? "Release"))
                     return -1;
             }
@@ -56,8 +64,10 @@ namespace Commands
             {
                 if (File.Exists(projectPath))
                     File.Delete(projectPath);
+                
                 File.Move(backupFileName, projectPath);
             }
+
             return 0;
         }
 
@@ -65,7 +75,6 @@ namespace Commands
         {
             var parsedArgs = ArgumentParser.ParsePack(args);
 
-            //dep = new Dep((string)parsedArgs["module"]);
             if (parsedArgs["configuration"] != null)
                 configuration = (string)parsedArgs["configuration"];
             preRelease = (bool)parsedArgs["prerelease"];
