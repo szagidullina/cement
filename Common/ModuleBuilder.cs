@@ -104,7 +104,7 @@ namespace Common
 
         private bool BuildSingleModule(Dep dep)
         {
-            var moduleYaml = Path.Combine(Helper.CurrentWorkspace, dep.Name, Helper.YamlSpecFile);
+            var moduleYaml = Path.Combine(Helper.CurrentWorkspace, dep.Name, DirectoryHelper.YamlSpecFile);
             var cmdFile = Path.Combine(Helper.CurrentWorkspace, ModuleBuilderHelper.GetBuildScriptName(dep));
             if (!Build(dep, moduleYaml, cmdFile))
                 return false;

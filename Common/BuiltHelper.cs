@@ -20,7 +20,7 @@ namespace Common
 
         public static bool HasAllOutput(string moduleName, string configuration, bool requireYaml)
         {
-            var path = Path.Combine(Helper.CurrentWorkspace, moduleName, Helper.YamlSpecFile);
+            var path = Path.Combine(Helper.CurrentWorkspace, moduleName, DirectoryHelper.YamlSpecFile);
             if (!File.Exists(path))
                 return !requireYaml;
             var artifacts = Yaml.InstallParser(moduleName).Get(configuration).Artifacts;

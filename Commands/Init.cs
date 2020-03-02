@@ -28,7 +28,7 @@ namespace Commands
                 return 0;
             }
 
-            Directory.CreateDirectory(Helper.CementDirectory);
+            Directory.CreateDirectory(DirectoryHelper.CementDirectory);
             ConsoleWriter.WriteOk(Directory.GetCurrentDirectory() + " became cement tracked directory.");
             return 0;
         }

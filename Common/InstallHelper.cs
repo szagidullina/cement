@@ -21,7 +21,7 @@ namespace Common
 
         public static List<string> GetAllInstallFiles(string module)
         {
-            if (!File.Exists(Path.Combine(Helper.CurrentWorkspace, module, Helper.YamlSpecFile)))
+            if (!File.Exists(Path.Combine(Helper.CurrentWorkspace, module, DirectoryHelper.YamlSpecFile)))
                 return new List<string>();
             var configs = Yaml.ConfigurationParser(module).GetConfigurations();
             var result = configs.Select(config => Yaml.InstallParser(module).Get(config)).SelectMany(parser => parser.Artifacts);

@@ -10,16 +10,16 @@ namespace Tests.UtilsTests
         {
             var dir = new TempDirectory();
             Directory.CreateDirectory(Path.Combine(dir.Path, "A"));
-            File.WriteAllText(Path.Combine(dir.Path, "A", Helper.YamlSpecFile), yamlA);
+            File.WriteAllText(Path.Combine(dir.Path, "A", DirectoryHelper.YamlSpecFile), yamlA);
             Directory.CreateDirectory(Path.Combine(dir.Path, "B"));
-            File.WriteAllText(Path.Combine(dir.Path, "B", Helper.YamlSpecFile), yamlB);
+            File.WriteAllText(Path.Combine(dir.Path, "B", DirectoryHelper.YamlSpecFile), yamlB);
             return dir;
         }
 
         private string Patch(TempDirectory workspace, string configuration, Dep dep)
         {
             new DepsPatcher(workspace.Path, "A", dep).Patch(configuration);
-            var result = File.ReadAllText(Path.Combine(workspace.Path, "A", Helper.YamlSpecFile));
+            var result = File.ReadAllText(Path.Combine(workspace.Path, "A", DirectoryHelper.YamlSpecFile));
             return result;
         }
 

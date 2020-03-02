@@ -13,17 +13,27 @@ using Microsoft.Extensions.Logging;
 
 namespace Common
 {
-    public static class Helper
+    public static class DirectoryHelper
     {
         public const string CementDirectory = ".cement";
         public const string YamlSpecFile = "module.yaml";
+    }
+
+    public static class Helper
+    {
         public const string ConfigurationDelimiter = "/";
-        public static readonly int MaxDegreeOfParallelism = CementSettings.Get().MaxDegreeOfParallelism ?? 2 * Environment.ProcessorCount;
-        public static ParallelOptions ParallelOptions => new ParallelOptions { MaxDegreeOfParallelism = MaxDegreeOfParallelism };
+        public static readonly int MaxDegreeOfParallelism;
+        public static ParallelOptions ParallelOptions => new ParallelOptions {MaxDegreeOfParallelism = MaxDegreeOfParallelism};
         public static string CurrentWorkspace { get; private set; }
         public static readonly object LockObject = new object();
         public static readonly object PackageLockObject = new object();
-        private static readonly ILogger Log = LogManager.GetLogger(typeof(Helper));
+        private static readonly ILogger Log;
+
+        static Helper()
+        {
+            Log = LogManager.GetLogger(typeof(Helper));
+            MaxDegreeOfParallelism = CementSettings.Get().MaxDegreeOfParallelism ?? 2 * Environment.ProcessorCount;
+        }
 
         public static void SetWorkspace(string workspace)
         {
@@ -32,7 +42,7 @@ namespace Common
 
         public static bool IsCementTrackedDirectory(string path)
         {
-            return Directory.Exists(Path.Combine(path, CementDirectory));
+            return Directory.Exists(Path.Combine(path, DirectoryHelper.CementDirectory));
         }
 
         public static bool IsCurrentDirectoryModule(string cwd)
@@ -51,7 +61,7 @@ namespace Common
 
         public static string GetGlobalCementDirectory()
         {
-            return Path.Combine(HomeDirectory(), CementDirectory);
+            return Path.Combine(HomeDirectory(), DirectoryHelper.CementDirectory);
         }
 
         public static string GetCementInstallDirectory()
@@ -161,7 +171,8 @@ namespace Common
         public static string GetAssemblyTitle()
         {
             return ((AssemblyTitleAttribute)
-                Attribute.GetCustomAttribute(Assembly.GetEntryAssembly(),
+                Attribute.GetCustomAttribute(
+                    Assembly.GetEntryAssembly(),
                     typeof(AssemblyTitleAttribute))).Title;
         }
 
@@ -175,6 +186,7 @@ namespace Common
             {
                 idx++;
             }
+
             res = res.Substring(idx);
             return res;
         }
@@ -197,6 +209,7 @@ namespace Common
                 path = parent.FullName;
                 parent = Directory.GetParent(parent.FullName);
             }
+
             return null;
         }
 
@@ -207,6 +220,7 @@ namespace Common
             {
                 folder = Directory.GetParent(folder.FullName);
             }
+
             return folder?.FullName;
         }
 
@@ -217,6 +231,7 @@ namespace Common
             {
                 fromFolder += Path.DirectorySeparatorChar;
             }
+
             var folderUri = new Uri(fromFolder);
             return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
         }
@@ -230,6 +245,7 @@ namespace Common
                     break;
                 path = temp;
             }
+
             return path;
         }
 
@@ -379,6 +395,7 @@ namespace Common
             {
                 Log.LogWarning("Failed to get MSBuild version from " + fullPathToMsBuild, e);
             }
+
             return null;
         }
     }

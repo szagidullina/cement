@@ -30,7 +30,7 @@ namespace Tests.CommandsTests
         [TearDown]
         public void TearDown()
         {
-            Console.WriteLine("\n" + File.ReadAllText(Helper.YamlSpecFile));
+            Console.WriteLine("\n" + File.ReadAllText(DirectoryHelper.YamlSpecFile));
             Directory.SetCurrentDirectory(startDirectory);
         }
 

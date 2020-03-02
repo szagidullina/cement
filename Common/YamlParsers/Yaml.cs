@@ -10,12 +10,12 @@ namespace Common.YamlParsers
     {
         public static bool Exists(string moduleName)
         {
-            return File.Exists(Path.Combine(Helper.CurrentWorkspace, moduleName, Helper.YamlSpecFile));
+            return File.Exists(Path.Combine(Helper.CurrentWorkspace, moduleName, DirectoryHelper.YamlSpecFile));
         }
 
         public static string ReadAllText(string moduleName)
         {
-            return File.ReadAllText(Path.Combine(Helper.CurrentWorkspace, moduleName, Helper.YamlSpecFile));
+            return File.ReadAllText(Path.Combine(Helper.CurrentWorkspace, moduleName, DirectoryHelper.YamlSpecFile));
         }
 
         public static ConfigurationYamlParser ConfigurationParser(string moduleName)

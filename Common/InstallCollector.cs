@@ -28,7 +28,7 @@ namespace Common
         {
             var proceededModules = new HashSet<string>();
             var proceededNuGetPackages = new HashSet<string>();
-            if (!File.Exists(Path.Combine(path, Helper.YamlSpecFile)))
+            if (!File.Exists(Path.Combine(path, DirectoryHelper.YamlSpecFile)))
                 return new InstallData();
 
             var result = new InstallYamlParser(new FileInfo(path)).Get(configName);

@@ -65,7 +65,7 @@ namespace Commands
         {
             if (CommandSettings.Location == CommandSettings.CommandLocation.RootModuleDirectory &&
                 CommandSettings.RequireModuleYaml &&
-                !File.Exists(Helper.YamlSpecFile))
+                !File.Exists(DirectoryHelper.YamlSpecFile))
                 throw new CementException("This command require module.yaml file.\nUse convert-spec for convert old spec to module.yaml.");
         }
 

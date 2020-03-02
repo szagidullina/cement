@@ -13,7 +13,7 @@ namespace Common.YamlParsers
 
         public ConfigurationYamlParser(FileSystemInfo moduleName)
         {
-            var specFilePath = Path.Combine(moduleName.FullName, Helper.YamlSpecFile);
+            var specFilePath = Path.Combine(moduleName.FullName, DirectoryHelper.YamlSpecFile);
             var text = File.ReadAllText(specFilePath).Replace("\t", "    ");
             ModuleName = moduleName.Name;
 

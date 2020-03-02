@@ -80,7 +80,7 @@ namespace Commands
             if (testReplaces)
                 return hasReplaces ? -1 : 0;
 
-            if (!File.Exists(Path.Combine(currentModuleDirectory, Helper.YamlSpecFile)))
+            if (!File.Exists(Path.Combine(currentModuleDirectory, DirectoryHelper.YamlSpecFile)))
                 throw new CementException(
                     "No module.yaml file. You should patch deps file manually or convert old spec to module.yaml (cm convert-spec)");
             DepsPatcherProject.PatchDepsForProject(currentModuleDirectory, dep, project);

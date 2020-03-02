@@ -16,7 +16,7 @@ namespace Tests.Helpers
         {
             using (var dir = new TempDirectory())
             {
-                var yamlPath = Path.Combine(dir.Path, Helper.YamlSpecFile);
+                var yamlPath = Path.Combine(dir.Path, DirectoryHelper.YamlSpecFile);
                 File.WriteAllText(yamlPath, text);
                 return new DepsYamlParser(new FileInfo(dir.Path));
             }
@@ -32,7 +32,7 @@ namespace Tests.Helpers
         {
             using (var dir = new TempDirectory())
             {
-                var yamlPath = Path.Combine(dir.Path, Helper.YamlSpecFile);
+                var yamlPath = Path.Combine(dir.Path, DirectoryHelper.YamlSpecFile);
                 File.WriteAllText(yamlPath, text);
                 return new BuildYamlParser(new FileInfo(dir.Path));
             }
@@ -42,7 +42,7 @@ namespace Tests.Helpers
         {
             using (var dir = new TempDirectory())
             {
-                var yamlPath = Path.Combine(dir.Path, Helper.YamlSpecFile);
+                var yamlPath = Path.Combine(dir.Path, DirectoryHelper.YamlSpecFile);
                 File.WriteAllText(yamlPath, text);
                 return new SettingsYamlParser(new FileInfo(dir.Path));
             }

@@ -107,7 +107,7 @@ namespace Commands
                 }
                 return;
             }
-            if (!File.Exists(Path.Combine(Helper.CurrentWorkspace, moduleName, Helper.YamlSpecFile)))
+            if (!File.Exists(Path.Combine(Helper.CurrentWorkspace, moduleName, DirectoryHelper.YamlSpecFile)))
             {
                 fixReferenceResult.NoYamlModules.Add(moduleName);
                 return;

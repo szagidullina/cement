@@ -21,7 +21,7 @@ namespace Commands
 
         protected override int Execute()
         {
-            if (File.Exists(Helper.YamlSpecFile))
+            if (File.Exists(DirectoryHelper.YamlSpecFile))
                 throw new CementException("module.yaml already exists");
 
             var yamlTempName = Guid.NewGuid().ToString();
@@ -34,7 +34,7 @@ namespace Commands
             Convert(hierarchy, defaultConfiguration);
 
             writer.Close();
-            File.Move(yamlTempName, Helper.YamlSpecFile);
+            File.Move(yamlTempName, DirectoryHelper.YamlSpecFile);
 
             ConsoleWriter.WriteOk("Successfully converted info.");
             ConsoleWriter.WriteInfo("Check build section.");

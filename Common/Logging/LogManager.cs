@@ -116,7 +116,7 @@ namespace Common.Logging
         {
             logFileName = logFileName == null || Helper.CurrentWorkspace == null
                 ? Path.Combine(Helper.GetGlobalCementDirectory(), "log", "log")
-                : Path.Combine(Helper.CurrentWorkspace, Helper.CementDirectory, "log", logFileName);
+                : Path.Combine(Helper.CurrentWorkspace, DirectoryHelper.CementDirectory, "log", logFileName);
 
             if (!logFileName.EndsWith(".log"))
                 logFileName += ".log";

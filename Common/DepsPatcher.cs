@@ -21,7 +21,7 @@ namespace Common
             this.workspace = workspace;
             this.patchModule = patchModule;
             this.patchDep = patchDep;
-            yamlPath = Path.Combine(workspace, patchModule, Helper.YamlSpecFile);
+            yamlPath = Path.Combine(workspace, patchModule, DirectoryHelper.YamlSpecFile);
             if (!File.Exists(yamlPath))
                 throw new CementException("module.yaml not found in " + yamlPath);
             ModuleYamlFile.ReplaceTabs(yamlPath);
@@ -162,7 +162,7 @@ namespace Common
 
         private void RemoveDepLine(string configuration, Dep dep, bool isOn)
         {
-            var path = Path.Combine(workspace, patchModule, Helper.YamlSpecFile);
+            var path = Path.Combine(workspace, patchModule, DirectoryHelper.YamlSpecFile);
             var moduleYamlFile = new ModuleYamlFile(new FileInfo(path));
             var lines = moduleYamlFile.Lines;
             var configIndex = lines.FindIndex(l => l.StartsWith(configuration + ":")
@@ -191,7 +191,7 @@ namespace Common
 
         private void AddDepLine(string configuration, Dep dep, bool isOn)
         {
-            var path = Path.Combine(workspace, patchModule, Helper.YamlSpecFile);
+            var path = Path.Combine(workspace, patchModule, DirectoryHelper.YamlSpecFile);
             var moduleYamlFile = new ModuleYamlFile(new FileInfo(path));
             var lines = moduleYamlFile.Lines;
             var configIndex = lines.FindIndex(l => l.StartsWith(configuration + ":")
@@ -216,7 +216,7 @@ namespace Common
 
         private void ReplaceDepLine(string patchConfiguration, Dep was, Dep shouldBe)
         {
-            var path = Path.Combine(workspace, patchModule, Helper.YamlSpecFile);
+            var path = Path.Combine(workspace, patchModule, DirectoryHelper.YamlSpecFile);
             var moduleYamlFile = new ModuleYamlFile(new FileInfo(path));
             var lines = moduleYamlFile.Lines;
             var configIndex = lines.FindIndex(l => l.StartsWith(patchConfiguration + ":")
@@ -338,7 +338,7 @@ namespace Common
 
         private static List<string> GetUsedCementConfigsForSolution(string modulePath, string solutionFile)
         {
-            var moduleYaml = Path.Combine(modulePath, Helper.YamlSpecFile);
+            var moduleYaml = Path.Combine(modulePath, DirectoryHelper.YamlSpecFile);
             if (!File.Exists(moduleYaml))
                 return new List<string>();
 
@@ -362,7 +362,7 @@ namespace Common
         private static List<string> GetUsedCementConfigsForProject(string modulePath, string csprojFile)
         {
             var projectPath = Path.GetFullPath(csprojFile);
-            var moduleYaml = Path.Combine(modulePath, Helper.YamlSpecFile);
+            var moduleYaml = Path.Combine(modulePath, DirectoryHelper.YamlSpecFile);
             if (!File.Exists(moduleYaml))
                 return new List<string>();
 

@@ -12,7 +12,7 @@ namespace Tests.CommandsTests
         private void MakeDirectoryAndWriteYaml(string path, string content)
         {
             Directory.CreateDirectory(path);
-            File.WriteAllText(Path.Combine(path, Helper.YamlSpecFile), content);
+            File.WriteAllText(Path.Combine(path, DirectoryHelper.YamlSpecFile), content);
         }
 
         [Test]

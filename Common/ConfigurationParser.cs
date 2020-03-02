@@ -10,7 +10,7 @@ namespace Common
 
         public ConfigurationParser(FileInfo modulePath)
         {
-            if (File.Exists(Path.Combine(modulePath.FullName, Helper.YamlSpecFile)))
+            if (File.Exists(Path.Combine(modulePath.FullName, DirectoryHelper.YamlSpecFile)))
                 parser = new ConfigurationYamlParser(modulePath);
             else
             {

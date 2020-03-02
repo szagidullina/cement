@@ -102,7 +102,7 @@ namespace Commands
                 }
             }
 
-            if (!File.Exists(Path.Combine(moduleDirectory, Helper.YamlSpecFile)))
+            if (!File.Exists(Path.Combine(moduleDirectory, DirectoryHelper.YamlSpecFile)))
                 throw new CementException("No module.yaml file. You should patch deps file manually or convert old spec to module.yaml (cm convert-spec)");
             DepsPatcherProject.PatchDepsForSolution(moduleDirectory, analyzerModule, moduleSolutionPath);
 

@@ -15,7 +15,7 @@ namespace Common
 
         public DepsData Get(string config = null)
         {
-            if (File.Exists(Path.Combine(modulePath, Helper.YamlSpecFile)))
+            if (File.Exists(Path.Combine(modulePath, DirectoryHelper.YamlSpecFile)))
                 return new DepsYamlParser(new FileInfo(modulePath)).Get(config);
 
             if (File.Exists(Path.Combine(modulePath,
