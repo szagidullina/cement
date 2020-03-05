@@ -4,7 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Common.Extensions;
+using System.Threading.Tasks;
+using Common.NuGet;
 using Microsoft.Extensions.Logging;
 using NuGet.CommandLine;
 using NuGet.Common;
@@ -14,7 +15,6 @@ using NuGet.Packaging.Core;
 using NuGet.ProjectManagement;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
-using Console = NuGet.CommandLine.Console;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 using PackageDownloader = NuGet.PackageManagement.PackageDownloader;
 using PackageSourceProvider = NuGet.Configuration.PackageSourceProvider;
@@ -35,7 +35,6 @@ namespace Common
         {
             private readonly List<string> packagesList;
             private readonly ProjectFile projectFile;
-            private readonly Console logger;
             private readonly MSBuildNuGetProject project;
             private readonly ConsoleProjectContext projectContext;
             private readonly MSBuildProjectSystem projectSystem;
@@ -53,13 +52,12 @@ namespace Common
                 var sourceRepositoryProvider = new CommandLineSourceRepositoryProvider(sourceProvider);
                 repositories = sourceProvider.LoadPackageSources().Select(sourceRepositoryProvider.CreateRepository)
                     .ToList();
-                logger = new Console();
 
                 var projectFilePath = projectFile.FilePath;
 
                 var msbuildDirectory =
                     Path.GetDirectoryName(ModuleBuilderHelper.FindMsBuild(null, "Cement NuGet Package Installer").Path);
-                projectContext = new ConsoleProjectContext(logger);
+                projectContext = new ConsoleProjectContext(new MicrosoftNuGetLoggerAdapter(log));
                 projectSystem = new MSBuildProjectSystem(
                     msbuildDirectory,
                     projectFilePath,
@@ -68,7 +66,7 @@ namespace Common
                 project = new MSBuildNuGetProject(projectSystem, packagesPath, projectFolder);
             }
 
-            public void Install()
+            public async Task InstallAsync()
             {
                 using (var sourceCacheContext = new SourceCacheContext())
                 {
@@ -76,9 +74,10 @@ namespace Common
                     foreach (var packageName in packagesList)
                     {
                         var package = ParsePackage(packageName);
-                        InstallPackageWithDependencies(package, packageDownloadContext);
+                        await InstallPackageWithDependenciesAsync(package, packageDownloadContext);
                     }
                 }
+
                 projectSystem.Save();
 
                 var projectFileContent = File.ReadAllText(projectSystem.ProjectFileFullPath);
@@ -91,11 +90,11 @@ namespace Common
                     new UTF8Encoding(true));
             }
 
-            private void InstallPackageWithDependencies(PackageIdentity package,
+            private async Task InstallPackageWithDependenciesAsync(PackageIdentity package,
                 PackageDownloadContext packageDownloadContext)
             {
                 log.LogInformation($"Loading package {package}");
-                var downloadResourceResult = LoadPackage(package, packageDownloadContext);
+                var downloadResourceResult = await LoadPackageAsync(package, packageDownloadContext);
                 var dependencyGroups = downloadResourceResult.PackageReader.GetPackageDependencies().ToList();
                 var mostCompatibleFramework = new FrameworkReducer().GetNearest(
                     projectSystem.TargetFramework,
@@ -110,16 +109,16 @@ namespace Common
                             NuGetVersion.Parse(dependency.VersionRange.MinVersion.ToFullString()));
                         log.LogInformation($"Resolved dependency of {package}: {dependencyIdentity}");
                         if (installedPackages.Contains(dependencyIdentity)) continue;
-                        InstallPackageWithDependencies(dependencyIdentity, packageDownloadContext);
+                        await InstallPackageWithDependenciesAsync(dependencyIdentity, packageDownloadContext);
                         installedPackages.Add(dependencyIdentity);
                     }
                 }
 
                 var packageIdentity = new PackageIdentity(package.Id, new NuGetVersion(package.Version.Version));
-                var installSuccess = project
+                var installSuccess = await project
                     .InstallPackageAsync(packageIdentity, downloadResourceResult, projectContext,
-                        CancellationToken.None)
-                    .Result;
+                        CancellationToken.None);
+
                 if (installSuccess)
                 {
                     log.LogInformation($"Installed {package}");
@@ -131,17 +130,17 @@ namespace Common
                 }
             }
 
-            private DownloadResourceResult LoadPackage(PackageIdentity package,
+            private async Task<DownloadResourceResult> LoadPackageAsync(PackageIdentity package,
                 PackageDownloadContext packageDownloadContext)
             {
-                var downloadResourceResult = PackageDownloader.GetDownloadResourceResultAsync(
+                var downloadResourceResult = await PackageDownloader.GetDownloadResourceResultAsync(
                     repositories,
                     package,
                     packageDownloadContext,
                     SettingsUtility.GetGlobalPackagesFolder(Settings.LoadDefaultSettings(null)),
-                    logger,
+                    new MicrosoftNuGetLoggerAdapter(log),
                     CancellationToken.None
-                ).Result;
+                );
                 return downloadResourceResult;
             }
 
@@ -156,9 +155,10 @@ namespace Common
             }
         }
 
-        public void InstallPackages(List<string> packagesList, string packagesPath, ProjectFile projectFilePath)
+        public async Task InstallPackagesAsync(List<string> packagesList, string packagesPath,
+            ProjectFile projectFilePath)
         {
-            new NuGetProject(packagesList, packagesPath, projectFilePath, log).Install();
+            await new NuGetProject(packagesList, packagesPath, projectFilePath, log).InstallAsync();
         }
     }
 }

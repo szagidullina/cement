@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using Common.Extensions;
 using Common.Logging;
@@ -43,7 +44,8 @@ namespace Common
             foreach (var oldRuleSet in oldRuleSets)
             {
                 var oldRulesetValue = oldRuleSet.InnerText;
-                var oldRulesetPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(FilePath), oldRuleSet.InnerText));
+                var oldRulesetPath =
+                    Path.GetFullPath(Path.Combine(Path.GetDirectoryName(FilePath), oldRuleSet.InnerText));
                 var oldRulesetPathOrName = File.Exists(oldRulesetPath) ? oldRulesetPath : oldRulesetValue;
                 rulesetFile.Include(oldRulesetPathOrName);
                 oldRuleSet.ParentNode.RemoveChild(oldRuleSet);
@@ -52,7 +54,8 @@ namespace Common
             var namespaceUri = Document.DocumentElement.NamespaceURI;
             var nsmgr = new XmlNamespaceManager(Document.NameTable);
             nsmgr.AddNamespace("a", namespaceUri);
-            var ruleSetParentNode = Document.SelectSingleNode("/a:Project/a:PropertyGroup[not(@Condition)][a:AssemblyName]", nsmgr);
+            var ruleSetParentNode =
+                Document.SelectSingleNode("/a:Project/a:PropertyGroup[not(@Condition)][a:AssemblyName]", nsmgr);
             var ruleSetNode = Document.CreateElement("CodeAnalysisRuleSet", namespaceUri);
             var ruleSetNodeValue = Document.CreateTextNode(relativeRulesetPath);
             ruleSetNode.AppendChild(ruleSetNodeValue);
@@ -68,10 +71,13 @@ namespace Common
                 .Cast<XmlNode>()
                 .ToList();
 
-            if (installedAnalyzerNodes.Any(node => node.Attributes != null && Path.GetFileName(node.Attributes["Include"].Value) == analyzerName))
+            if (installedAnalyzerNodes.Any(node =>
+                node.Attributes != null && Path.GetFileName(node.Attributes["Include"].Value) == analyzerName))
                 return;
 
-            var analyzerGroup = installedAnalyzerNodes.Any() ? installedAnalyzerNodes.First().ParentNode : CreateAnalyzerGroup();
+            var analyzerGroup = installedAnalyzerNodes.Any()
+                ? installedAnalyzerNodes.First().ParentNode
+                : CreateAnalyzerGroup();
             var analyzerNode = Document.CreateElement("Analyzer", Document.DocumentElement.NamespaceURI);
             analyzerNode.SetAttribute("Include", analyzerDllRelPath);
             analyzerGroup.AppendChild(analyzerNode);
@@ -82,7 +88,9 @@ namespace Common
             refXml = Document
                 .GetElementsByTagName("Reference")
                 .Cast<XmlNode>()
-                .FirstOrDefault(node => node.Attributes?["Include"].Value != null && node.Attributes["Include"].Value.Split(',').First().Trim() == reference);
+                .FirstOrDefault(node =>
+                    node.Attributes?["Include"].Value != null &&
+                    node.Attributes["Include"].Value.Split(',').First().Trim() == reference);
             return refXml != null;
         }
 
@@ -102,6 +110,7 @@ namespace Common
 
             return elementToInsert;
         }
+
         public XmlNode CreateNuGetReference(string refName, string version)
         {
             var elementToInsert = Document.CreateElement("PackageReference", Document.DocumentElement.NamespaceURI);
@@ -145,7 +154,8 @@ namespace Common
                     var toReplace = new List<XmlNode>();
                     foreach (XmlNode node in referenceGroup.ChildNodes)
                     {
-                        if (node.Attributes != null && node.Attributes["Include"]?.Value.Split(',').First().Trim() == refName)
+                        if (node.Attributes != null &&
+                            node.Attributes["Include"]?.Value.Split(',').First().Trim() == refName)
                         {
                             toReplace.Add(node);
                         }
@@ -186,10 +196,12 @@ namespace Common
                     var node = refNodes.Cast<XmlNode>().FirstOrDefault(x =>
                     {
                         var moduleName = x.Attributes?["Include"]?.Value;
-                        return moduleName != null && moduleName.Equals(dep.Name, StringComparison.InvariantCultureIgnoreCase);
+                        return moduleName != null &&
+                               moduleName.Equals(dep.Name, StringComparison.InvariantCultureIgnoreCase);
                     });
                     node?.ParentNode?.RemoveChild(node);
                 }
+
                 var refElement = patchedProjDoc.CreateElement("PackageReference");
                 var includeAttr = patchedProjDoc.CreateAttribute("Include");
                 includeAttr.Value = dep.Name;
@@ -201,12 +213,13 @@ namespace Common
                     versionAttr.Value = packageVersion;
                     refElement.Attributes.Append(versionAttr);
                 }
+
                 itemGroup.AppendChild(refElement);
             }
 
             return patchedProjDoc;
         }
-        
+
         public void Save()
         {
             XmlDocumentHelper.Save(Document, FilePath, LineEndings);
@@ -230,6 +243,7 @@ namespace Common
                 .Cast<XmlNode>()
                 .Any(childNode => childNode.Name == "Reference");
         }
+
         private bool IsPackageReferenceGroup(XmlNode xmlNode)
         {
             return xmlNode.ChildNodes
@@ -255,7 +269,7 @@ namespace Common
             return itemGroup;
         }
 
-        public void InstallNuGetPackages(List<string> nuGetPackages)
+        public async Task InstallNuGetPackagesAsync(List<string> nuGetPackages)
         {
             if (newFormat)
             {
@@ -276,7 +290,7 @@ namespace Common
             {
                 var currentModuleDirectory = Helper.GetModuleDirectory(Directory.GetCurrentDirectory());
                 var packagesDirectory = Path.Combine(currentModuleDirectory, "packages");
-                new NuGetPackageHepler(log).InstallPackages(nuGetPackages, packagesDirectory, this);
+                await new NuGetPackageHepler(log).InstallPackagesAsync(nuGetPackages, packagesDirectory, this);
             }
         }
 
@@ -289,7 +303,10 @@ namespace Common
                                          .Cast<XmlNode>()
                                          .FirstOrDefault(IsPackageReferenceGroup) ?? CreateItemGroup();
                 var packageNode = Document.SelectNodes("*/ItemGroup/PackageReference")?.Cast<XmlElement>()
-                    .FirstOrDefault(el => el.Attributes["Include", Document.DocumentElement.NamespaceURI].Value.Equals(packageName, StringComparison.InvariantCultureIgnoreCase));
+                    .FirstOrDefault(el =>
+                        el.Attributes["Include", Document.DocumentElement.NamespaceURI].Value
+                            .Equals(packageName, StringComparison.InvariantCultureIgnoreCase));
+
                 if (packageNode == null)
                     referenceGroup?.AppendChild(CreateNuGetReference(packageName, packageVersion));
                 else

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using Common;
 using Common.YamlParsers;
@@ -76,7 +77,7 @@ namespace Commands
                 return 0;
             }
 
-            AddModuleToCsproj(installData);
+            AddModuleToCsprojAsync(installData).Wait();
             if (testReplaces)
                 return hasReplaces ? -1 : 0;
 
@@ -131,14 +132,14 @@ namespace Commands
             }
         }
 
-        private void AddModuleToCsproj(InstallData installData)
+        private async Task AddModuleToCsprojAsync(InstallData installData)
         {
             var projectPath = Path.GetFullPath(project);
             var csproj = new ProjectFile(projectPath);
 
             try
             {
-                csproj.InstallNuGetPackages(installData.NuGetPackages);
+                await csproj.InstallNuGetPackagesAsync(installData.NuGetPackages);
             }
             catch (Exception e)
             {

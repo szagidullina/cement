@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Common
 {
-    [JsonConverter(typeof(DepConverter))]
+    [Newtonsoft.Json.JsonConverter(typeof(DepConverter))]
     public class Dep : IEquatable<Dep>
     {
         public string Name { get; }
@@ -111,7 +111,7 @@ namespace Common
         }
     }
 
-    public class DepConverter : JsonConverter
+    public class DepConverter : Newtonsoft.Json.JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
