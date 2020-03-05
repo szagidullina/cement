@@ -14,7 +14,7 @@ namespace Commands
             }
 
             var cwd = Directory.GetCurrentDirectory();
-            var home = Helper.HomeDirectory();
+            var home = DirectoryHelper.HomeDirectory();
 
             if (cwd == home)
             {

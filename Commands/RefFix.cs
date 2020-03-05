@@ -94,7 +94,7 @@ namespace Commands
 
         private void Fix(string project, string reference)
         {
-            var moduleName = Helper.GetRootFolder(reference);
+            var moduleName = DirectoryHelper.GetRootFolder(reference);
             if (moduleName == rootModuleName && reference.ToLower().Contains("\\packages\\"))
                 return;
 
@@ -125,7 +125,7 @@ namespace Commands
 
             if (!withSameName.Any())
             {
-                if (Helper.GetRootFolder(reference) != rootModuleName)
+                if (DirectoryHelper.GetRootFolder(reference) != rootModuleName)
                     fixReferenceResult.NotFound[project].Add(reference);
                 return;
             }
@@ -169,7 +169,7 @@ namespace Commands
             var csproj = new ProjectFile(projectPath);
 
             var refName = Path.GetFileNameWithoutExtension(reference);
-            var hintPath = Helper.GetRelativePath(Path.Combine(Helper.CurrentWorkspace, reference),
+            var hintPath = DirectoryHelper.GetRelativePath(Path.Combine(Helper.CurrentWorkspace, reference),
                 Directory.GetParent(projectPath).FullName);
             XmlNode refXml;
             if (csproj.ContainsRef(refName, out refXml))
@@ -184,7 +184,7 @@ namespace Commands
 
         private void TryAddToDeps(string reference, string project)
         {
-            var moduleDep = Helper.GetRootFolder(reference);
+            var moduleDep = DirectoryHelper.GetRootFolder(reference);
             if (moduleDep == rootModuleName)
                 return;
 

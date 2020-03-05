@@ -67,7 +67,7 @@ namespace Common.Logging
             if (!(herculesLog is null))
                 return;
 
-            var configLogFilePath = Path.Combine(Helper.GetCementInstallDirectory(), "dotnet", "herculeslog.config.json");
+            var configLogFilePath = Path.Combine(DirectoryHelper.GetCementInstallDirectory(), "dotnet", "herculeslog.config.json");
             if (!File.Exists(configLogFilePath))
             {
                 ConsoleWriter.WriteError($"{configLogFilePath} not found.");
@@ -115,7 +115,7 @@ namespace Common.Logging
         private static ILog GetFileLogger(string logFileName)
         {
             logFileName = logFileName == null || Helper.CurrentWorkspace == null
-                ? Path.Combine(Helper.GetGlobalCementDirectory(), "log", "log")
+                ? Path.Combine(DirectoryHelper.GetGlobalCementDirectory(), "log", "log")
                 : Path.Combine(Helper.CurrentWorkspace, DirectoryHelper.CementDirectory, "log", logFileName);
 
             if (!logFileName.EndsWith(".log"))

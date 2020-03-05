@@ -28,9 +28,10 @@ namespace Common
                 log = LogManager.GetLogger(typeof(ModuleGetter));
 
             this.log = log;
+            var osIsUnix = PlatformHelper.OsIsUnix();
             startInfo = new ProcessStartInfo
             {
-                FileName = Helper.OsIsUnix() ? "/bin/bash" : "cmd",
+                FileName = osIsUnix ? "/bin/bash" : "cmd",
                 CreateNoWindow = true,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
@@ -59,7 +60,7 @@ namespace Common
 
         private void BeforeRun()
         {
-            startInfo.Arguments = Helper.OsIsUnix() ? " -lc " : " /D /C ";
+            startInfo.Arguments = PlatformHelper.OsIsUnix() ? " -lc " : " /D /C ";
             Output = "";
             Errors = "";
             HasTimeout = false;

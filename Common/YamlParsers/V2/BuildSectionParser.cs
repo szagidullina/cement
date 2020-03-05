@@ -56,7 +56,7 @@ namespace Common.YamlParsers.V2
 
             foreach (var section in buildSections)
             {
-                var target = Helper.FixPath(FindValue(section, "target", defaultTarget));
+                var target = DirectoryHelper.FixPath(FindValue(section, "target", defaultTarget));
                 var configuration = FindValue(section, "configuration", defaultConfiguration);
                 var tool = GetTools(section, defaultToolName, defaultToolVersion);
                 var parameters = FindBuildParams(section) ?? defaultParams;

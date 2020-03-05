@@ -83,15 +83,15 @@ namespace Common
                         key, Path.Combine(set[key], "VsDevCmd.bat")));
             }
 
-            var programFiles = Helper.ProgramFiles();
+            var programFiles = DirectoryHelper.ProgramFiles();
             if (programFiles == null)
                 return null;
 
-            foreach (var version in Helper.VisualStudioVersions)
-            foreach (var edition in Helper.VisualStudioEditions)
+            foreach (var version in VisualStudioHelper.VisualStudioVersions)
+            foreach (var edition in VisualStudioHelper.VisualStudioEditions)
             {
                 paths.Add(new KeyValuePair<string, string>(
-                    Helper.GetEnvVariableByVisualStudioVersion(version),
+                    VisualStudioHelper.GetEnvVariableByVisualStudioVersion(version),
                     Path.Combine(programFiles, "Microsoft Visual Studio", version, edition, "Common7", "Tools", "VsDevCmd.bat")));
             }
 

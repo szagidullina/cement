@@ -148,15 +148,15 @@ namespace Commands
 
             foreach (var buildItem in installData.InstallFiles)
             {
-                var buildItemPath = Helper.OsIsUnix() ? Helper.WindowsPathSlashesToUnix(buildItem) : buildItem;
+                var buildItemPath = PlatformHelper.OsIsUnix() ? DirectoryHelper.WindowsPathSlashesToUnix(buildItem) : buildItem;
                 var refName = Path.GetFileNameWithoutExtension(buildItemPath);
 
-                var hintPath = Helper.GetRelativePath(Path.Combine(Helper.CurrentWorkspace, buildItemPath),
+                var hintPath = DirectoryHelper.GetRelativePath(Path.Combine(Helper.CurrentWorkspace, buildItemPath),
                     Directory.GetParent(projectPath).FullName);
 
-                if (Helper.OsIsUnix())
+                if (PlatformHelper.OsIsUnix())
                 {
-                    hintPath = Helper.UnixPathSlashesToWindows(hintPath);
+                    hintPath = DirectoryHelper.UnixPathSlashesToWindows(hintPath);
                 }
 
                 AddRef(csproj, refName, hintPath);

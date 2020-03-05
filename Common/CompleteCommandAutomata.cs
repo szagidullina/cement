@@ -168,7 +168,7 @@ namespace Common
                 return fileNames;
 
             return files
-                .Select(f => Helper.GetRelativePath(f, Directory.GetCurrentDirectory()))
+                .Select(f => DirectoryHelper.GetRelativePath(f, Directory.GetCurrentDirectory()))
                 .Select(f => f.Replace('\\', '/'));
         }
 

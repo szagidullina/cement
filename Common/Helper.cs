@@ -5,20 +5,12 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Common.Logging;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 
 namespace Common
 {
-    public static class DirectoryHelper
-    {
-        public const string CementDirectory = ".cement";
-        public const string YamlSpecFile = "module.yaml";
-    }
-
     public static class Helper
     {
         public const string ConfigurationDelimiter = "/";
@@ -59,38 +51,6 @@ namespace Common
             return true;
         }
 
-        public static string GetGlobalCementDirectory()
-        {
-            return Path.Combine(HomeDirectory(), DirectoryHelper.CementDirectory);
-        }
-
-        public static string GetCementInstallDirectory()
-        {
-            return Path.Combine(HomeDirectory(), "bin");
-        }
-
-        public static bool OsIsUnix()
-        {
-            return Environment.OSVersion.Platform == PlatformID.Unix;
-        }
-
-        public static string HomeDirectory()
-        {
-            return OsIsUnix()
-                ? Environment.GetEnvironmentVariable("HOME")
-                : Environment.GetEnvironmentVariable("USERPROFILE");
-        }
-
-        public static string GetPackagePath(string packageName)
-        {
-            return Path.Combine(GetGlobalCementDirectory(), packageName + ".cmpkg");
-        }
-
-        public static string GetServerRepositoriesPath()
-        {
-            return Path.Combine(Directory.GetDirectoryRoot(HomeDirectory()), "CementServer", "Repositories");
-        }
-
         public static bool DirectoryContainsModule(string directory, string moduleName)
         {
             return Directory.EnumerateDirectories(directory)
@@ -107,7 +67,7 @@ namespace Common
         {
             lock (PackageLockObject)
             {
-                var packageConfig = GetPackagePath(package.Name);
+                var packageConfig = DirectoryHelper.GetPackagePath(package.Name);
                 if (!File.Exists(packageConfig))
                     PackageUpdater.UpdatePackages();
                 var configData = File.ReadAllText(packageConfig);
@@ -191,11 +151,7 @@ namespace Common
             return res;
         }
 
-        // ReSharper disable once UnusedMember.Global
-        public static string GetBinariesPath()
-        {
-            return Path.Combine(Directory.GetDirectoryRoot(HomeDirectory()), "CementServer", "Binaries");
-        }
+        
 
         public static string GetModuleDirectory(string path)
         {
@@ -224,34 +180,9 @@ namespace Common
             return folder?.FullName;
         }
 
-        public static string GetRelativePath(string filePath, string fromFolder)
-        {
-            var pathUri = new Uri(filePath);
-            if (!fromFolder.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                fromFolder += Path.DirectorySeparatorChar;
-            }
-
-            var folderUri = new Uri(fromFolder);
-            return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
-        }
-
-        public static string GetRootFolder(string path)
-        {
-            while (true)
-            {
-                var temp = Path.GetDirectoryName(path);
-                if (string.IsNullOrEmpty(temp))
-                    break;
-                path = temp;
-            }
-
-            return path;
-        }
-
         private static string GetLastUpdateFilePath()
         {
-            return Path.Combine(GetGlobalCementDirectory(), "last-update2");
+            return Path.Combine(DirectoryHelper.GetGlobalCementDirectory(), "last-update2");
         }
 
         public static DateTime GetLastUpdateTime()
@@ -266,22 +197,7 @@ namespace Common
         public static void SaveLastUpdateTime()
         {
             var file = GetLastUpdateFilePath();
-            CreateFileAndDirectory(file, "");
-        }
-
-        public static void CreateFileAndDirectory(string filePath, string content)
-        {
-            CreateFileAndDirectory(filePath);
-            File.WriteAllText(filePath, content);
-        }
-
-        private static void CreateFileAndDirectory(string filePath)
-        {
-            var dir = Directory.GetParent(filePath).FullName;
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-            if (!File.Exists(filePath))
-                File.Create(filePath).Close();
+            DirectoryHelper.CreateFileAndDirectory(file, "");
         }
 
         public static void RemoveOldKey(ref string[] args, string oldKey, ILogger log)
@@ -292,48 +208,6 @@ namespace Common
                 log.LogWarning("Found old key " + oldKey + " in " + string.Join(" ", args) + " in " + Directory.GetCurrentDirectory());
                 args = args.Where(a => a != oldKey).ToArray();
             }
-        }
-
-        public static string FixPath([NotNull] string path)
-        {
-            return path.Replace('\\', Path.DirectorySeparatorChar);
-        }
-
-        public static string ProgramFiles()
-        {
-            var programFiles = Environment.GetEnvironmentVariable("ProgramFiles(x86)") ??
-                               Environment.GetEnvironmentVariable("ProgramFiles");
-            return programFiles;
-        }
-
-        public static IReadOnlyList<string> VisualStudioEditions { get; } =
-            new List<string>
-            {
-                "Community",
-                "Professional",
-                "Enterprise",
-                "BuildTools",
-            }.AsReadOnly();
-
-        public static IReadOnlyList<string> VisualStudioVersions { get; } =
-            new List<string>
-            {
-                "2017",
-                "2019",
-            }.AsReadOnly();
-
-        public static string GetEnvVariableByVisualStudioVersion(string version)
-        {
-            switch (version)
-            {
-                case "2019": return "VS160COMNTOOLS";
-                default: return "VS150COMNTOOLS";
-            }
-        }
-
-        public static bool IsVisualStudioVersion(string version)
-        {
-            return !string.IsNullOrEmpty(version) && Regex.IsMatch(version, "^[0-9][0-9].[0-9]$");
         }
 
         public static string Encrypt(string password)
@@ -357,46 +231,6 @@ namespace Common
         public static string FixLineEndings(string text)
         {
             return text.Replace("\r\n", "\n");
-        }
-
-        public static string UnixPathSlashesToWindows(string path)
-        {
-            return path.Replace('/', '\\');
-        }
-
-        public static string WindowsPathSlashesToUnix(string path)
-        {
-            return path.Replace('\\', '/');
-        }
-
-        public static string GetMsBuildVersion(string fullPathToMsBuild)
-        {
-            if (!File.Exists(fullPathToMsBuild))
-                return null;
-
-            try
-            {
-                var shellRunner = new ShellRunner();
-                var exitCode = shellRunner.RunOnce(Path.GetFileName(fullPathToMsBuild) + " -version", Path.GetDirectoryName(fullPathToMsBuild), TimeSpan.FromSeconds(10));
-                if (exitCode == 0 && !string.IsNullOrEmpty(shellRunner.Output))
-                {
-                    var versionMatches = Regex.Matches(shellRunner.Output, @"^(?<version>\d+(\.\d+)+)", RegexOptions.ExplicitCapture | RegexOptions.Multiline);
-                    if (versionMatches.Count > 0)
-                    {
-                        var version = versionMatches[versionMatches.Count - 1].Groups["version"].Value;
-                        if (!string.IsNullOrEmpty(version))
-                            return version;
-                    }
-                }
-                else
-                    Log.LogDebug("Failed to get msbuild version for " + fullPathToMsBuild);
-            }
-            catch (Exception e)
-            {
-                Log.LogWarning("Failed to get MSBuild version from " + fullPathToMsBuild, e);
-            }
-
-            return null;
         }
     }
 }

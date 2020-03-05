@@ -34,7 +34,7 @@ namespace Common
 
         public void Include(string rulesetPath)
         {
-            var relativeRulesetPath = Path.IsPathRooted(rulesetPath) ? Helper.GetRelativePath(rulesetPath, Path.GetDirectoryName(FilePath)) : rulesetPath;
+            var relativeRulesetPath = Path.IsPathRooted(rulesetPath) ? DirectoryHelper.GetRelativePath(rulesetPath, Path.GetDirectoryName(FilePath)) : rulesetPath;
 
             if (!AlreadyIncluded(relativeRulesetPath))
             {

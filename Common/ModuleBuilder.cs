@@ -24,7 +24,7 @@ namespace Common
 
         public void Init()
         {
-            if (!Helper.OsIsUnix())
+            if (!PlatformHelper.OsIsUnix())
             {
                 VsDevHelper.ReplaceVariablesToVs();
                 ModuleBuilderHelper.FindMsBuildsWindows();
@@ -121,7 +121,7 @@ namespace Common
             var artifacts = Yaml.InstallParser(dep.Name).Get(dep.Configuration).Artifacts;
             foreach (var artifact in artifacts)
             {
-                var fixedPath = Helper.FixPath(artifact);
+                var fixedPath = DirectoryHelper.FixPath(artifact);
                 if (!File.Exists(Path.Combine(Helper.CurrentWorkspace, dep.Name, fixedPath)))
                 {
                     ConsoleWriter.WriteError($"{artifact} not found in {dep.Name}. Check install section.");

@@ -23,7 +23,7 @@ namespace Common.Logging
         {
             try
             {
-                var file = Path.Combine(Helper.GetCementInstallDirectory(), "log.log");
+                var file = Path.Combine(DirectoryHelper.GetCementInstallDirectory(), "log.log");
                 if (!File.Exists(file))
                     File.Create(file).Close();
                 File.AppendAllText(file, "\n" + log);
@@ -38,7 +38,7 @@ namespace Common.Logging
         {
             try
             {
-                var file = Path.Combine(Helper.GetCementInstallDirectory(), "log.log");
+                var file = Path.Combine(DirectoryHelper.GetCementInstallDirectory(), "log.log");
                 if (!File.Exists(file))
                     File.Create(file).Close();
                 var lines = File.ReadAllLines(file).Where(l => l.Length > 0).ToList();

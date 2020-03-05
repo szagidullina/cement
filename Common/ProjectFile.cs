@@ -31,7 +31,7 @@ namespace Common
 
         public void BindRuleset(RulesetFile rulesetFile)
         {
-            var relativeRulesetPath = Helper.GetRelativePath(rulesetFile.FilePath, Path.GetDirectoryName(FilePath));
+            var relativeRulesetPath = DirectoryHelper.GetRelativePath(rulesetFile.FilePath, Path.GetDirectoryName(FilePath));
             var oldRuleSets = Document
                 .GetElementsByTagName("CodeAnalysisRuleSet")
                 .Cast<XmlNode>()
@@ -62,7 +62,7 @@ namespace Common
         public void AddAnalyzer(string analyzerDllPath)
         {
             var analyzerName = Path.GetFileName(analyzerDllPath);
-            var analyzerDllRelPath = Helper.GetRelativePath(analyzerDllPath, Path.GetDirectoryName(FilePath));
+            var analyzerDllRelPath = DirectoryHelper.GetRelativePath(analyzerDllPath, Path.GetDirectoryName(FilePath));
             var installedAnalyzerNodes = Document
                 .GetElementsByTagName("Analyzer")
                 .Cast<XmlNode>()

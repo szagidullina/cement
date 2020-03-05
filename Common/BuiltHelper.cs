@@ -24,7 +24,7 @@ namespace Common
             if (!File.Exists(path))
                 return !requireYaml;
             var artifacts = Yaml.InstallParser(moduleName).Get(configuration).Artifacts;
-            return artifacts.Select(Helper.FixPath).All(art => File.Exists(Path.Combine(Helper.CurrentWorkspace, moduleName, art)));
+            return artifacts.Select(DirectoryHelper.FixPath).All(art => File.Exists(Path.Combine(Helper.CurrentWorkspace, moduleName, art)));
         }
     }
 }

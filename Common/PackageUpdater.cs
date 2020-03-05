@@ -31,7 +31,7 @@ namespace Common
         {
             lock (Helper.PackageLockObject)
                 File.Copy(Path.Combine(package.Url),
-                    Helper.GetPackagePath(package.Name), true);
+                    DirectoryHelper.GetPackagePath(package.Name), true);
         }
 
         private static void UpdateGitPackage(Package package)
@@ -62,10 +62,10 @@ namespace Common
                     }
                     lock (Helper.PackageLockObject)
                     {
-                        if (!Directory.Exists(Helper.GetGlobalCementDirectory()))
-                            Directory.CreateDirectory(Helper.GetGlobalCementDirectory());
+                        if (!Directory.Exists(DirectoryHelper.GetGlobalCementDirectory()))
+                            Directory.CreateDirectory(DirectoryHelper.GetGlobalCementDirectory());
                         File.Copy(Path.Combine(tempDir.Path, package.Name, "modules"),
-                            Helper.GetPackagePath(package.Name), true);
+                            DirectoryHelper.GetPackagePath(package.Name), true);
                     }
                     break;
                 }

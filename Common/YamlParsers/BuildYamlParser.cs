@@ -49,7 +49,7 @@ namespace Common.YamlParsers
                 ProcessBuildSection(configName, buildSection, buildSections);
 
             return buildSections.Select(parameters =>
-                new BuildData(Helper.FixPath((string) parameters["target"]), (string) parameters["configuration"],
+                new BuildData(DirectoryHelper.FixPath((string) parameters["target"]), (string) parameters["configuration"],
                     GetToolFromSection(parameters["tool"]),
                     GetBuildParams(parameters["parameters"]), (string) parameters["name"])).ToList();
         }

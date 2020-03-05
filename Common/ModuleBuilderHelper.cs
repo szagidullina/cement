@@ -15,7 +15,7 @@ namespace Common
 
         public static MsBuildLikeTool FindMsBuild(string version, string moduleName)
         {
-            if (Helper.OsIsUnix())
+            if (PlatformHelper.OsIsUnix())
                 return new MsBuildLikeTool(FindMsBuildUnix(version, moduleName));
 
             var msBuilds = FindMsBuildsWindows();
@@ -66,7 +66,7 @@ namespace Common
 
         private static List<KeyValuePair<string, string>> FindAvailableMsBuildsInProgramFiles()
         {
-            var programFiles = Helper.ProgramFiles();
+            var programFiles = DirectoryHelper.ProgramFiles();
             if (programFiles == null)
                 return new List<KeyValuePair<string, string>>();
 
@@ -76,8 +76,8 @@ namespace Common
             if (variables.ContainsKey("VSINSTALLDIR"))
                 folders.Add(variables["VSINSTALLDIR"]);
 
-            foreach (var version in Helper.VisualStudioVersions)
-            foreach (var edition in Helper.VisualStudioEditions)
+            foreach (var version in VisualStudioHelper.VisualStudioVersions)
+            foreach (var edition in VisualStudioHelper.VisualStudioEditions)
             {
                 folders.Add(Path.Combine(programFiles, "Microsoft Visual Studio", version, edition));
             }
@@ -96,7 +96,7 @@ namespace Common
             foreach (var subDir in subDirs)
             {
                 var currentVersion = subDir.Name;
-                if (!Helper.IsVisualStudioVersion(currentVersion) && currentVersion != "Current")
+                if (!VisualStudioHelper.IsVisualStudioVersion(currentVersion) && currentVersion != "Current")
                     continue;
 
                 var bin = Path.Combine(subDir.FullName, "Bin");
@@ -104,7 +104,7 @@ namespace Common
                     continue;
 
                 var match = new DirectoryInfo(bin).GetFiles("msbuild.exe")
-                    .Select(m => new {fullPath = m.FullName, version = Helper.GetMsBuildVersion(m.FullName) })
+                    .Select(m => new {fullPath = m.FullName, version = VisualStudioHelper.GetMsBuildVersion(m.FullName) })
                     .LastOrDefault(v => !string.IsNullOrEmpty(v.version));
                 if (match != null)
                 {
@@ -127,7 +127,7 @@ namespace Common
             frameworkDirectory = Path.Combine(winDir, "Microsoft.NET", "Framework64");
             msbuilds.AddRange(SearchMsBuild(frameworkDirectory));
 
-            return msbuilds.Select(path => new {path = path.FullName, version = Helper.GetMsBuildVersion(path.FullName)})
+            return msbuilds.Select(path => new {path = path.FullName, version = VisualStudioHelper.GetMsBuildVersion(path.FullName)})
                 .Where(i => !string.IsNullOrEmpty(i.version))
                 .Select(i => new KeyValuePair<string, string>(i.version, i.path))
                 .Reverse()

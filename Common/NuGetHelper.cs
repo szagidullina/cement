@@ -40,14 +40,14 @@ namespace Common
             if (nuGetPath == null)
                 return null;
             var nugetCommand = $"\"{nuGetPath}\"";
-            if (Helper.OsIsUnix())
+            if (PlatformHelper.OsIsUnix())
                 nugetCommand = $"mono {nugetCommand}";
             return nugetCommand;
         }
 
         private static string GetNuGetPath()
         {
-            var nuget = Path.Combine(Helper.GetCementInstallDirectory(), "dotnet", "NuGet.exe");
+            var nuget = Path.Combine(DirectoryHelper.GetCementInstallDirectory(), "dotnet", "NuGet.exe");
             if (!File.Exists(nuget))
             {
                 Log.LogError($"NuGet.exe not found in {nuget}");

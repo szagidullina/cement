@@ -8,7 +8,7 @@ namespace Common
     {
         public static void Show(string moduleName, List<string> lines)
         {
-            var arborDir = Path.Combine(Helper.GetCementInstallDirectory(), "dotnet", "arborjs");
+            var arborDir = Path.Combine(DirectoryHelper.GetCementInstallDirectory(), "dotnet", "arborjs");
             var templateFileName = Path.Combine(arborDir, "deps_template.html");
             var resultFileName = Path.Combine(arborDir, "deps.html");
 

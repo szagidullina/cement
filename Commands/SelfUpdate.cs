@@ -126,9 +126,9 @@ then
 fi
 exit $exit_code";
 
-            var installDirectory = Helper.GetCementInstallDirectory();
-            Helper.CreateFileAndDirectory(Path.Combine(installDirectory, "cm.cmd"), cmdText);
-            Helper.CreateFileAndDirectory(Path.Combine(installDirectory, "cm"), Helper.OsIsUnix() ? bashTextUnix : bashText);
+            var installDirectory = DirectoryHelper.GetCementInstallDirectory();
+            DirectoryHelper.CreateFileAndDirectory(Path.Combine(installDirectory, "cm.cmd"), cmdText);
+            DirectoryHelper.CreateFileAndDirectory(Path.Combine(installDirectory, "cm"), PlatformHelper.OsIsUnix() ? bashTextUnix : bashText);
             Log.LogDebug("Successfully created cm.cmd & cm.");
         }
 
@@ -158,13 +158,13 @@ exit $exit_code";
 
         private static bool HasInstalledCement()
         {
-            var installDirectory = Helper.GetCementInstallDirectory();
+            var installDirectory = DirectoryHelper.GetCementInstallDirectory();
             return File.Exists(Path.Combine(installDirectory, "dotnet", "cm.exe"));
         }
 
         private static bool HasAllCementFiles()
         {
-            var installDirectory = Helper.GetCementInstallDirectory();
+            var installDirectory = DirectoryHelper.GetCementInstallDirectory();
             return Directory.Exists(Path.Combine(installDirectory, "dotnet", "arborjs"));
         }
 
@@ -226,7 +226,7 @@ exit $exit_code";
                 return;
             }
 
-            var dotnetInstallFolder = Path.Combine(Helper.GetCementInstallDirectory(), "dotnet");
+            var dotnetInstallFolder = Path.Combine(DirectoryHelper.GetCementInstallDirectory(), "dotnet");
             if (!Directory.Exists(dotnetInstallFolder))
                 Directory.CreateDirectory(dotnetInstallFolder);
             Log.LogDebug("dotnet install folder: " + dotnetInstallFolder);
@@ -250,11 +250,11 @@ exit $exit_code";
 
         private void AddInstallToPath()
         {
-            if (Helper.OsIsUnix())
+            if (PlatformHelper.OsIsUnix())
                 return;
 
             var path = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User);
-            var toAdd = Path.Combine(Helper.GetCementInstallDirectory());
+            var toAdd = Path.Combine(DirectoryHelper.GetCementInstallDirectory());
 
             if (path == null)
             {
@@ -277,10 +277,10 @@ exit $exit_code";
 
         private void InstallPowerShell()
         {
-            if (Helper.OsIsUnix() || IsInstallingCement)
+            if (PlatformHelper.OsIsUnix() || IsInstallingCement)
                 return;
 
-            var directory = Path.Combine(Helper.HomeDirectory(), "Documents", "WindowsPowerShell");
+            var directory = Path.Combine(DirectoryHelper.HomeDirectory(), "Documents", "WindowsPowerShell");
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
             var profileFile = Path.Combine(directory, "NuGet_profile.ps1");
@@ -294,7 +294,7 @@ exit $exit_code";
             if (!Directory.Exists(moduleDirectory))
                 Directory.CreateDirectory(moduleDirectory);
 
-            var src = Path.Combine(Helper.GetCementInstallDirectory(), "dotnet", "cementPM.psm1");
+            var src = Path.Combine(DirectoryHelper.GetCementInstallDirectory(), "dotnet", "cementPM.psm1");
             if (!File.Exists(src))
             {
                 ConsoleWriter.WriteWarning("cement powershell script not found at " + src);
@@ -305,14 +305,14 @@ exit $exit_code";
 
         private void InstallClinkScript()
         {
-            if (Helper.OsIsUnix() || IsInstallingCement)
+            if (PlatformHelper.OsIsUnix() || IsInstallingCement)
                 return;
 
-            var directory = Path.Combine(Helper.HomeDirectory(), "AppData", "Local", "clink");
+            var directory = Path.Combine(DirectoryHelper.HomeDirectory(), "AppData", "Local", "clink");
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
-            var src = Path.Combine(Helper.GetCementInstallDirectory(), "dotnet", "cement_completion.lua");
+            var src = Path.Combine(DirectoryHelper.GetCementInstallDirectory(), "dotnet", "cement_completion.lua");
             if (!File.Exists(src))
             {
                 ConsoleWriter.WriteWarning("lua script not found at " + src);
@@ -323,10 +323,10 @@ exit $exit_code";
 
         private void InstallBashScript()
         {
-            if (Helper.OsIsUnix())
+            if (PlatformHelper.OsIsUnix())
                 return;
 
-            var file = Path.Combine(Helper.HomeDirectory(), ".profile");
+            var file = Path.Combine(DirectoryHelper.HomeDirectory(), ".profile");
             if (!File.Exists(file))
                 File.Create(file).Close();
 

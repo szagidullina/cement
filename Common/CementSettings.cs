@@ -26,13 +26,13 @@ namespace Common
         public void Save()
         {
             var text = JsonConvert.SerializeObject(this, Formatting.Indented);
-            var path = Path.Combine(Helper.GetGlobalCementDirectory(), "settings");
-            Helper.CreateFileAndDirectory(path, text);
+            var path = Path.Combine(DirectoryHelper.GetGlobalCementDirectory(), "settings");
+            DirectoryHelper.CreateFileAndDirectory(path, text);
         }
 
         private static CementSettings GetDefaultSettings()
         {
-            var path = Path.Combine(Helper.GetCementInstallDirectory(), "dotnet", "defaultSettings.json");
+            var path = Path.Combine(DirectoryHelper.GetCementInstallDirectory(), "dotnet", "defaultSettings.json");
             if (!File.Exists(path))
                 ConsoleWriter.WriteError($"{path} not found");
             return ReadSettings(path);
@@ -40,17 +40,21 @@ namespace Common
 
         public static CementSettings Get()
         {
-            var path = Path.Combine(Helper.GetGlobalCementDirectory(), "settings");
+            var path = Path.Combine(DirectoryHelper.GetGlobalCementDirectory(), "settings");
             var defaultSettings = GetDefaultSettings();
 
             var settings = ReadSettings(path);
             settings = settings ?? defaultSettings;
 
             settings.Packages = settings.Packages ?? defaultSettings.Packages;
-            foreach (var package in defaultSettings.Packages)
+
+            if (defaultSettings.Packages != null)
             {
-                if (settings.Packages.All(p => p.Name != package.Name))
-                    settings.Packages.Add(package);
+                foreach (var package in defaultSettings.Packages)
+                {
+                    if (settings.Packages.All(p => p.Name != package.Name))
+                        settings.Packages.Add(package);
+                }
             }
 
             settings.SelfUpdateTreeish = settings.SelfUpdateTreeish ?? defaultSettings.SelfUpdateTreeish;

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Commands;
 using Common;
 using NUnit.Framework;
@@ -16,7 +17,9 @@ namespace Tests.CommandsTests
                 using (new DirectoryJumper(tmp.Path))
                 {
                     new Init().Run(new[] {"init"});
-                    Assert.That(Directory.Exists(Path.Combine(tmp.Path, DirectoryHelper.CementDirectory)));
+                    var path = Path.Combine(tmp.Path, DirectoryHelper.CementDirectory);
+                    Console.WriteLine($@"Assert path '{path}'");
+                    Assert.That(Directory.Exists(path));
                 }
             }
         }
