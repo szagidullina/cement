@@ -342,20 +342,12 @@ namespace Common
 
         public static string Encrypt(string password)
         {
-            byte[] passwordBytes = Encoding.Unicode.GetBytes(password);
-
-            byte[] cipherBytes = ProtectedData.Protect(passwordBytes, null, DataProtectionScope.CurrentUser);
-
-            return Convert.ToBase64String(cipherBytes);
+            return password;
         }
 
         public static string Decrypt(string cipher)
         {
-            byte[] cipherBytes = Convert.FromBase64String(cipher);
-
-            byte[] passwordBytes = ProtectedData.Unprotect(cipherBytes, null, DataProtectionScope.CurrentUser);
-
-            return Encoding.Unicode.GetString(passwordBytes);
+            return cipher;
         }
 
         public static string FixLineEndings(string text)

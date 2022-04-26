@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Management;
+//using System.Management;
 using System.Security;
 using System.Text;
 using System.Threading;
@@ -173,14 +173,14 @@ namespace Common
                 return;
             killed.Add(pid);
 
-            var searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + pid);
+           /* var searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + pid);
             var moc = searcher.Get();
             foreach (var mo in moc)
             {
                 int child = Convert.ToInt32(mo["ProcessID"]);
                 KillProcessAndChildren(child, killed);
             }
-
+*/
             try
             {
                 var proc = Process.GetProcessById(pid);
