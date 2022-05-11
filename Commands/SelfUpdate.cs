@@ -33,7 +33,7 @@ namespace Commands
                 var lastUpdate = Helper.GetLastUpdateTime();
                 var now = DateTime.Now;
                 var diff = now - lastUpdate;
-                if (diff <= TimeSpan.FromHours(5))
+                if (diff <= TimeSpan.FromMinutes(30))
                     return;
                 isAutoUpdate = true;
                 var exitCode = new SelfUpdate().Run(new[] {"self-update"});
@@ -87,9 +87,10 @@ namespace Commands
 
             var server = CementSettings.Get().CementServer;
             Log.LogInformation($"Cement server: {server}");
-            var updater = server == null
-                ? (ICementUpdater) new CementFromGitHubUpdater(Log)
-                : (ICementUpdater) new CementFromServerUpdater(server, branch, Log);
+            // var updater = server == null
+            //     ? (ICementUpdater) new CementFromGitHubUpdater(Log)
+            //     : (ICementUpdater) new CementFromServerUpdater(server, branch, Log);
+            var updater = new CementFromLocalPathUpdater(Log);
 
             return UpdateBinary(updater);
         }
@@ -99,22 +100,20 @@ namespace Commands
             const string cmdText = @"@echo off
 ""%~dp0\dotnet\cm.exe"" %*
 SET exit_code=%errorlevel%
-if exist %~dp0\dotnet\cm_new.exe (
-	copy %~dp0\dotnet\cm_new.exe %~dp0\dotnet\cm.exe /Y > nul
-	del %~dp0\dotnet\cm_new.exe > nul
+if exist %~dp0\dotnet\win10-x64\cm.exe (
+	copy %~dp0\dotnet\win10-x64\cm.exe %~dp0\dotnet\cm.exe /Y > nul
 )
 cmd /C exit %exit_code% > nul";
 
             var bashTextUnix = @"#!/bin/bash
 path=""`dirname \""$0\""`/dotnet/cm.exe""
-cmd=""mono $path""
+cmd=""$path""
 for word in ""$@""; do cmd=""$cmd \""$word\""""; done
 eval $cmd
 exit_code=$?
-if [ -f ~/bin/dotnet/cm_new.exe ];
+if [ -f ~/bin/dotnet/linux-x64/cm ];
 then
-	cp ~/bin/dotnet/cm_new.exe ~/bin/dotnet/cm.exe
-	rm ~/bin/dotnet/cm_new.exe
+	cp ~/bin/dotnet/linux-x64/cm ~/bin/dotnet/cm.exe
 	chmod u+x ~/bin/dotnet/cm.exe
 fi
 exit $exit_code";
@@ -125,10 +124,9 @@ path=""`dirname \""$0\""`/dotnet/cm.exe""
 args=$@
 $path ""$@""
 exit_code=$?
-if [ -f ~/bin/dotnet/cm_new.exe ];
+if [ -f ~/bin/dotnet/os-x64/cm ];
 then
-	cp ~/bin/dotnet/cm_new.exe ~/bin/dotnet/cm.exe
-	rm ~/bin/dotnet/cm_new.exe
+	cp ~/bin/dotnet/os-x64/cm ~/bin/dotnet/cm.exe
 	chmod u+x ~/bin/dotnet/cm.exe
 fi
 exit $exit_code";
@@ -238,11 +236,11 @@ exit $exit_code";
                 Directory.CreateDirectory(dotnetInstallFolder);
             Log.LogDebug("dotnet install folder: " + dotnetInstallFolder);
 
-            var cm = Path.Combine(from, "cm.exe");
-            var cmNew = Path.Combine(from, "cm_new.exe");
-            File.Copy(cm, cmNew, true);
-            if (!IsInstallingCement && File.Exists(Path.Combine(dotnetInstallFolder, "cm.exe")))
-                File.Delete(cm);
+            // var cm = Path.Combine(from, "cm.exe");
+            // var cmNew = Path.Combine(from, "cm_new.exe");
+            // File.Copy(cm, cmNew, true);
+            // if (!IsInstallingCement && File.Exists(Path.Combine(dotnetInstallFolder, "cm.exe")))
+            //     File.Delete(cm);
 
             var files = Directory.GetFiles(from, "*", SearchOption.AllDirectories);
             foreach (var file in files)

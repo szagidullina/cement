@@ -106,6 +106,14 @@ namespace Common
         {
             return CementSettings.Get().Packages ?? throw new CementException("Packages not specified.");
         }
+        
+        public static string GetZipCementDirectory()
+        {
+            var zipDir = Path.Combine(HomeDirectory(), "work");
+            if (!Directory.Exists(zipDir))
+                Directory.CreateDirectory(zipDir);
+            return zipDir;
+        }
 
         public static IList<Module> GetModulesFromPackage(Package package)
         {
