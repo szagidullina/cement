@@ -106,23 +106,23 @@ SET exit_code=%errorlevel%
 if exist %~dp0\dotnet\win10-x64\cm.exe (
 	copy %~dp0\dotnet\win10-x64\cm.exe %~dp0\dotnet\cm.exe /Y > nul
     del %~dp0\dotnet\win10-x64\cm.exe > nul
-)ELSE(
-  if exist %~dp0\dotnet\cm_new.exe (
+)ELSE if exist %~dp0\dotnet\cm_new.exe (
 	copy %~dp0\dotnet\cm_new.exe %~dp0\dotnet\cm.exe /Y > nul
-	del %~dp0\dotnet\cm_new.exe > nul)
-)
+	del %~dp0\dotnet\cm_new.exe > nul
+    )
+
 cmd /C exit %exit_code% > nul";
 
             var bashTextUnix = @"#!/bin/bash
 path=""`dirname \""$0\""`/dotnet/cm.exe""
 
-usingMono = ""mono ""  
+usingMono=""mono ""  
 if [ -f ~/bin/dotnet/linux-x64/cm ]
 then 
-    usingMono = ""
+    usingMono=""""
 fi
 
-cmd=$usingMono + ""$path""
+cmd=""$usingMono $path""
 for word in ""$@""; do cmd=""$cmd \""$word\""""; done
 eval $cmd
 exit_code=$?
@@ -266,9 +266,9 @@ exit $exit_code";
                 Directory.CreateDirectory(dotnetInstallFolder);
             Log.LogDebug("dotnet install folder: " + dotnetInstallFolder);
 
-            var cm = Path.Combine(from, "cm.exe");
-            if (!IsInstallingCement && File.Exists(Path.Combine(dotnetInstallFolder, "cm.exe")))
-                File.Delete(cm);
+            // var cm = Path.Combine(from, "cm.exe");
+            // if (!IsInstallingCement && File.Exists(Path.Combine(dotnetInstallFolder, "cm.exe")))
+                // File.Delete(cm);
 
             var files = Directory.GetFiles(from, "*", SearchOption.AllDirectories);
             foreach (var file in files)
