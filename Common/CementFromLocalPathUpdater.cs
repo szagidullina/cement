@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Common
 {
-    public class CementFromLocalPathUpdater : ICementUpdater
+    public sealed class CementFromLocalPathUpdater : ICementUpdater
     {
         private readonly ILogger log;
 
@@ -20,27 +20,26 @@ namespace Common
 
         public byte[] GetNewCementZip()
         {
-            //var zipContent = File.ReadAllBytes(zipCementPath);
             try
             {
 
-                using (FileStream fsSource = new FileStream(
+                using (var fsSource = new FileStream(
                            Path.Combine(Helper.GetZipCementDirectory(), "cement.zip"),
                            FileMode.Open,
                            FileAccess.Read))
                 {
-                    byte[] zipContent = new byte[fsSource.Length];
+                    var zipContent = new byte[fsSource.Length];
                     int numBytesToRead = (int)fsSource.Length;
                     int numBytesRead = 0;
                     while (numBytesToRead > 0)
                     {
-                        int n = fsSource.Read(zipContent, numBytesRead, numBytesToRead);
+                        var byteBlock = fsSource.Read(zipContent, numBytesRead, numBytesToRead);
 
-                        if (n == 0)
+                        if (byteBlock == 0)
                             break;
 
-                        numBytesRead += n;
-                        numBytesToRead -= n;
+                        numBytesRead += byteBlock;
+                        numBytesToRead -= byteBlock;
                     }
 
                     return zipContent;
@@ -48,7 +47,7 @@ namespace Common
             }
             catch (Exception ex)
             {
-                log.LogError($"Fail self-update, exception: '{ex}' ");
+                log.LogError("Fail self-update, exception: '{Message}' ", ex.Message);
             }
 
             return null;
